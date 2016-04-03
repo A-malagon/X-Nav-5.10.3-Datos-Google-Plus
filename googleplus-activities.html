@@ -31,8 +31,14 @@
       // The provided key works for this sample only when run from
       // https://google-api-javascript-client.googlecode.com/hg/samples/authSample.html
       // To use in your own application, replace this API key with your own.
-      var apiKey = '';
+      var apiKey = 'AIzaSyBXcyRUHHLsh9If13EkE_QSVoDDhMEdTzA';
 
+
+      function localizacion(r, fecha, ul) {
+            if(r.location){
+               ul.innerHTML += " LATITUD: " + r.location.position.latitude + " LONGITUD: " + r.location.position.longitude + fecha;
+            }
+      }
       // Use a button to handle authentication the first time.
       function handleClientLoad() {
         gapi.client.setApiKey(apiKey);
@@ -42,19 +48,34 @@
       // Load the API and make an API call.  Display the results on the screen.
       function makeApiCall() {
         gapi.client.load('plus', 'v1', function() {
-          var request = gapi.client.plus.people.get({
-            'userId': ''
+          var request = gapi.client.plus.activities.list({
+            'userId': '103846222472267112072',
+            'collection':'public'
             // For instance: 
             // 'userId': '+GregorioRobles'
           });
           request.execute(function(resp) {
-            var heading = document.createElement('h4');
+            var enlaces = document.createElement('div');
+            var heading = document.createElement('h1');
             var image = document.createElement('img');
-            image.src = resp.image.url;
-            heading.appendChild(image);
-            heading.appendChild(document.createTextNode(resp.displayName));
+            var user = resp.items[0].actor;
 
+            image.src = user.image.url;
+            heading.appendChild(image);
+            heading.appendChild(document.createTextNode(user.displayName));
             document.getElementById('content').appendChild(heading);
+            for (i in resp.items){
+                var ul = document.createElement('ul');
+                var r = resp.items[i];
+                ul.innerHTML = "ACTIVIDAD "+ i + ": " + " <a href='" + r.url + "'>"+ r.title + " </a>";
+                var fecha = " FECHA: " + r.published;
+               
+                localizacion(r, fecha, ul);
+
+                enlaces.appendChild(ul);
+            }
+            document.getElementById('content').appendChild(heading);
+            document.getElementById('content').appendChild(enlaces);
           });
         });
       }
@@ -64,3 +85,4 @@
     <p>Retrieves your profile name (and picture) using the Google Plus API.</p>
   </body>
 </html>
+
